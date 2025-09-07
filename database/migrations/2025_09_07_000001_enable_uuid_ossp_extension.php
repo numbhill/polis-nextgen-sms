@@ -10,8 +10,9 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        // Enable the uuid-ossp extension for UUID generation
-        DB::statement('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
+        }
     }
 
     /**
@@ -19,7 +20,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        // Usually we do NOT drop the extension in down(), to avoid breaking existing UUID columns
-        // DB::statement('DROP EXTENSION IF EXISTS "uuid-ossp";');
+        // optional: do nothing; safe for pg/sqlite
     }
 };

@@ -26,9 +26,6 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        // Set default UUID generation for primary key
-        DB::statement('ALTER TABLE users ALTER COLUMN id SET DEFAULT uuid_generate_v4();');
-
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
