@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('exams', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('course_id')->constrained();
+            $table->foreignUuid('course_offering_id')->constrained('course_offerings')->cascadeOnDelete();
             $table->string('exam_type');   // e.g. "midterm", "final"
             $table->dateTime('scheduled_at')->nullable();
             $table->timestamps();
