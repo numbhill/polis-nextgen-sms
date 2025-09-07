@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 
 class Student extends Model
 {
@@ -14,17 +13,6 @@ class Student extends Model
 
     public $incrementing = false;
     protected $keyType = 'string';
-
-    protected static function boot()
-    {
-        parent::boot();
-        static::creating(function ($model) {
-            // Only set a UUID on create (if not already set)
-            if (!$model->getKey()) {
-                $model->{$model->getKeyName()} = (string)Str::uuid();
-            }
-        });
-    }
 
     public function user(): BelongsTo
     {

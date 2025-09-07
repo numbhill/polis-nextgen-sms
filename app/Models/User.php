@@ -24,18 +24,6 @@ class User extends Authenticatable
 
     public $incrementing = false;
     protected $keyType = 'string';
-
-    protected static function boot()
-    {
-        parent::boot();
-        static::creating(function ($model) {
-            // Only set a UUID on create (if not already set)
-            if (!$model->getKey()) {
-                $model->{$model->getKeyName()} = (string)Str::uuid();
-            }
-        });
-    }
-
     protected $fillable = [
         'name',
         'email',
