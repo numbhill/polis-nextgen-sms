@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
@@ -10,6 +11,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        // Enable uuid-ossp extension for UUID generation (PostgreSQL)
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
+        }
+
         Schema::create('users', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('name');
@@ -20,6 +26,9 @@ return new class extends Migration {
             $table->timestamps();
         });
 
+        // Set default UUID generation for primary key
+        DB::statement('ALTER TABLE users ALTER COLUMN id SET DEFAULT uuid_generate_v4();');
+
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
@@ -28,7 +37,8 @@ return new class extends Migration {
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
+            // changed from foreignId() (bigint) -> uuid() to match users.id (UUID)
+            $table->uuid('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');
@@ -42,6 +52,9 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::dropIfExists('users');
+        if (DB::getDriverName() === 'pgsql') {
+            DB::statement('DROP EXTENSION IF EXISTS "uuid-ossp";');
+        }
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
     }
